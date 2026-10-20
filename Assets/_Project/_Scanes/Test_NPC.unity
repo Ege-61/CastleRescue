@@ -129,28 +129,15 @@ GameObject:
   m_Component:
   - component: {fileID: 306203088}
   - component: {fileID: 306203087}
-  - component: {fileID: 306203086}
+  - component: {fileID: 306203090}
+  - component: {fileID: 306203089}
   m_Layer: 0
-  m_Name: LLM
+  m_Name: Guard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &306203086
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 306203085}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01c36816554954e4f80161dab72b2f31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.LLM.LLMConnectionTester
-  testMessage: "Merhaba! kendini iki c\xFCmleyle tan\u0131t\n"
-  spinningObject: {fileID: 2060029560}
 --- !u!114 &306203087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +169,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &306203089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 306203085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52abb31103c89d747abbbcc6f9c7f888, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.NPC.GuardDialogueTester
+--- !u!114 &306203090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 306203085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af586006801352b4090fe3bc7af53516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.NPC.GuardNPC
+  llmClientComponent: {fileID: 0}
+  guardName: Gardiyan Hugo
+  persona: "Sen Kuzgun Kalesi'nin ya\u015Fl\u0131 zindan gardiyan\u0131 Hugo'sun. Otuz y\u0131ld\u0131r ayn\u0131 kap\u0131da n\xF6bet tutuyorsun. Prensesin hapsedildi\u011Fi kuleye a\xE7\u0131lan kap\u0131n\u0131n anahtar\u0131 sende. Kral'a sad\u0131ks\u0131n ama \xE7ok yorgunsun. Zaaflar\u0131n: alt\u0131n, iyi \u015Farap ve emekli olup k\xF6y\xFCne d\xF6nme hayali. Prensese i\xE7ten i\xE7e ac\u0131yorsun. En b\xFCy\xFCk korkun Kral'\u0131n \xF6fkesi ve zindana at\u0131lmak. Huysuz ama \xF6z\xFCnde iyi kalpli birisin."
+  openingLine: "Dur orada yabanc\u0131! Bu kap\u0131dan Kral'\u0131n izni olmadan kimse ge\xE7emez. Ne istiyorsun?"
+  startingTrust: 20
+  keyTrustThreshold: 60
+  autoKeyTrust: 90
+  maxTrustChangePerTurn: 25
+  maxHistoryMessages: 10
 --- !u!1 &908490588
 GameObject:
   m_ObjectHideFlags: 0
