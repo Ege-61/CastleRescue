@@ -117,19 +117,24 @@ namespace CastleRescue.LLM
                     "Ollama sunucusuna ulaşılamıyor. Ollama'nın açık olduğundan emin olun.", duration);
             }
 
-            // 2) Sunucuya ulaşıldı ama hata kodu döndü (404, 500 vb.)
+            // 2) Sunucuya ulaşıldı ama hata kodu döndü (400, 404, 500 vb.)
             if (request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogWarning($"OllamaClient HTTP {request.responseCode}: {request.downloadHandler.text}");
+                string serverError = ReadServerError(request.downloadHandler.text);
+                Debug.LogWarning($"OllamaClient HTTP {request.responseCode}: {serverError}");
 
-                if (request.responseCode == 404)
+                // Ollama'nın sürümüne göre olmayan model için 404 ya da 400 dönebiliyor.
+                // Bu yüzden koda değil, Ollama'nın hata mesajının içeriğine bakıyoruz.
+                bool modelMissing = request.responseCode == 404 ||
+                                    serverError.IndexOf("not found", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (modelMissing)
                 {
                     return LLMResult.Failure(LLMErrorType.ModelNotFound,
                         $"'{modelName}' modeli bulunamadı. Terminalde 'ollama pull {modelName}' çalıştırın.", duration);
                 }
 
                 return LLMResult.Failure(LLMErrorType.HttpError,
-                    $"Sunucu hata döndürdü (kod {request.responseCode}).", duration);
+                    $"Sunucu hata döndürdü (kod {request.responseCode}): {serverError}", duration);
             }
 
             // 3) Başka bir aktarım hatası
@@ -157,6 +162,30 @@ namespace CastleRescue.LLM
             }
 
             return LLMResult.Success(response.message.content, duration);
+        }
+
+        /// <summary>
+        /// Ollama hata durumunda {"error": "..."} biçiminde bir JSON döndürür.
+        /// Bu metot içindeki mesajı çıkarır. Okuyamazsa ham metni döndürür.
+        /// </summary>
+        private string ReadServerError(string body)
+        {
+            if (string.IsNullOrWhiteSpace(body)) return "(boş cevap)";
+
+            try
+            {
+                OllamaChatResponse errorResponse = JsonUtility.FromJson<OllamaChatResponse>(body);
+                if (errorResponse != null && !string.IsNullOrWhiteSpace(errorResponse.error))
+                {
+                    return errorResponse.error;
+                }
+            }
+            catch (Exception)
+            {
+                // JSON değilse aşağıda ham metni döndürüyoruz.
+            }
+
+            return body;
         }
 
         // Obje kapatılırsa coroutine yarıda kalır; IsBusy takılı kalmasın.

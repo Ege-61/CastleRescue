@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01c36816554954e4f80161dab72b2f31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.LLM.LLMConnectionTester
-  testMessage: "Merhaba! Kendini iki c\xFCmleyle tan\u0131t."
+  testMessage: "Merhaba! kendini iki c\xFCmleyle tan\u0131t\n"
   spinningObject: {fileID: 2060029560}
 --- !u!114 &306203087
 MonoBehaviour:

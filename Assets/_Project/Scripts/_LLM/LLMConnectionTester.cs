@@ -81,7 +81,8 @@ namespace CastleRescue.LLM
                 text = "Düşünüyor" + new string('.', dotCount);
             }
 
-            GUI.Label(new Rect(20, 20, 800, 500), text, style);
+            // Genişliği ekrana göre ayarlıyoruz ki küçük Game penceresinde yazı kesilmesin.
+            GUI.Label(new Rect(20, 20, Screen.width - 40, Screen.height - 40), text, style);
         }
     }
 }
