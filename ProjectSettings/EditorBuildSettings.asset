@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/_Project/_Scanes/Level1_Labirent.unity
     guid: e15a86f854d6ee7448fc854ab70305eb
   - enabled: 1
+    path: Assets/_Project/_Scanes/Level2_Salon.unity
+    guid: c5969fe9763eeff4d8ef14a85a749512
+  - enabled: 1
+    path: Assets/_Project/_Scanes/Level3_Avlu.unity
+    guid: 5523dde278c4dcd4394b40878b59d66e
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
