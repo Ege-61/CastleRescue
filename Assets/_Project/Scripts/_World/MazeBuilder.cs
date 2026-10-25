@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 namespace CastleRescue.World
@@ -173,6 +174,11 @@ namespace CastleRescue.World
                 new Vector3(cellSize, wallHeight, 0.3f), doorMaterial);
 
             if (rotate) door.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+
+            // NavMesh hesaplanırken kapıları yok say. Kapı kapalıyken bake edilse yaratık
+            // kapı açıldıktan sonra da oradan geçemeyeceğini sanırdı.
+            NavMeshModifier modifier = door.AddComponent<NavMeshModifier>();
+            modifier.ignoreFromBuild = true;
 
             door.AddComponent<Door>();
             door.AddComponent<InteractableDoor>();
