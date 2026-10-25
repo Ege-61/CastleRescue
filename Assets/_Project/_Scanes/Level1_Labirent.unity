@@ -9252,7 +9252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c14637b26d876141baa1ee8375de8fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.World.LevelExit
-  nextSceneName: Level3_Avlu
+  nextSceneName: Level2_Salon
 --- !u!65 &1417223798
 BoxCollider:
   m_ObjectHideFlags: 0
