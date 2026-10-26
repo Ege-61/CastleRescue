@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CastleRescue.Core;
 using CastleRescue.LLM;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace CastleRescue.NPC
     ///
     /// GuardNPC, Ollama'yı ya da arayüzü tanımaz; sadece ILLMClient ve event'leri bilir.
     /// </summary>
-    public class GuardNPC : MonoBehaviour
+    public class GuardNPC : MonoBehaviour, IConversationPartner
     {
         [Header("LLM Bağlantısı")]
         [Tooltip("ILLMClient uygulayan bileşen (OllamaClient). Boş bırakılırsa aynı objede aranır.")]
@@ -53,7 +54,9 @@ namespace CastleRescue.NPC
 
         // ---- Dışarıya açılan durum ----
         public string GuardName => guardName;
+        public string DisplayName => guardName;
         public string OpeningLine => openingLine;
+        public bool HasTrust => true;
         public int Trust { get; private set; }
         public bool IsThinking => llmClient != null && llmClient.IsBusy;
         public bool IsConversationOver { get; private set; }

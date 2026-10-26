@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
-using CastleRescue.NPC;
+using CastleRescue.Core;
 using UnityEngine;
 
 namespace CastleRescue.UI
 {
     /// <summary>
-    /// Gardiyanla konuşma ekranı. Ekranın altında yarı saydam bir panel çizer:
-    /// gardiyanın adı, güven çubuğu, konuşma geçmişi, "düşünüyor..." göstergesi ve yazı kutusu.
+    /// Konuşma ekranı. Ekranın altında yarı saydam bir panel çizer:
+    /// konuşulan karakterin adı, (varsa) güven çubuğu, konuşma geçmişi,
+    /// "düşünüyor..." göstergesi ve yazı kutusu.
     ///
-    /// Bu sınıf sadece GÖRÜNTÜDEN sorumludur. Oyuncuyu durdurmak, kapıyı açmak gibi işleri bilmez;
-    /// onları GuardInteraction yapar. (SOLID - Single Responsibility)
+    /// Kiminle konuşulduğunu bilmez; IConversationPartner arayüzünü uygulayan herkesle
+    /// (gardiyan, fare...) çalışır. Oyuncuyu durdurmak, kapı açmak gibi işleri de bilmez;
+    /// onları GuardInteraction ve CompanionChatInteraction yapar. (SOLID - Single Responsibility)
     /// </summary>
     public class DialogueUI : MonoBehaviour
     {
@@ -19,12 +21,15 @@ namespace CastleRescue.UI
         [Tooltip("Panelin ekran yüksekliğine oranı.")]
         [SerializeField, Range(0.2f, 0.8f)] private float panelHeightRatio = 0.45f;
 
-        /// <summary>Oyuncu Esc'ye bastığında. GuardInteraction dinler ve konuşmayı kapatır.</summary>
+        /// <summary>Oyuncu Esc'ye bastığında. Konuşmayı açan sınıf dinler ve kapatır.</summary>
         public event Action OnCloseRequested;
 
         public bool IsOpen { get; private set; }
 
-        private GuardNPC guard;
+        /// <summary>Şu an ekranda konuşulan karakter.</summary>
+        public IConversationPartner CurrentPartner => partner;
+
+        private IConversationPartner partner;
         private readonly List<string> lines = new List<string>();
         private string playerInput = "";
         private string statusLine = "";
@@ -43,22 +48,20 @@ namespace CastleRescue.UI
             barFillTexture = MakeTexture(Color.white);
         }
 
-        /// <summary>Konuşma ekranını açar ve gardiyanın olaylarını dinlemeye başlar.</summary>
-        public void Open(GuardNPC targetGuard)
+        /// <summary>Konuşma ekranını açar ve karakterin olaylarını dinlemeye başlar.</summary>
+        public void Open(IConversationPartner targetPartner)
         {
-            if (IsOpen || targetGuard == null) return;
+            if (IsOpen || targetPartner == null) return;
 
-            // Farklı bir gardiyansa ya da ekran boşsa baştan başla.
-            if (guard != targetGuard || lines.Count == 0)
+            // Farklı bir karakterse ya da ekran boşsa baştan başla.
+            if (partner != targetPartner || lines.Count == 0)
             {
-                guard = targetGuard;
+                partner = targetPartner;
                 ClearLog();
             }
 
-            guard.OnReplied += HandleReply;
-            guard.OnErrorOccurred += HandleError;
-            guard.OnKeyGiven += HandleKeyGiven;
-            guard.OnAttacked += HandleAttacked;
+            partner.OnReplied += HandleReply;
+            partner.OnErrorOccurred += HandleError;
 
             IsOpen = true;
             scrollToBottom = true;
@@ -69,10 +72,8 @@ namespace CastleRescue.UI
         {
             if (!IsOpen) return;
 
-            guard.OnReplied -= HandleReply;
-            guard.OnErrorOccurred -= HandleError;
-            guard.OnKeyGiven -= HandleKeyGiven;
-            guard.OnAttacked -= HandleAttacked;
+            partner.OnReplied -= HandleReply;
+            partner.OnErrorOccurred -= HandleError;
 
             IsOpen = false;
             playerInput = "";
@@ -83,7 +84,16 @@ namespace CastleRescue.UI
         {
             lines.Clear();
             statusLine = "";
-            if (guard != null) lines.Add(FormatGuardLine(guard.OpeningLine));
+            if (partner != null) lines.Add(FormatPartnerLine(partner.OpeningLine));
+        }
+
+        /// <summary>
+        /// Yazı kutusunun üstündeki durum satırını ayarlar.
+        /// Örn. gardiyan anahtarı verince GuardInteraction burada yeşil bir mesaj gösterir.
+        /// </summary>
+        public void SetStatus(string richText)
+        {
+            statusLine = richText ?? "";
         }
 
         private void OnDestroy()
@@ -91,11 +101,11 @@ namespace CastleRescue.UI
             Close();
         }
 
-        // ---------- Gardiyan olayları ----------
+        // ---------- Karakterin olayları ----------
 
         private void HandleReply(string reply, int trust)
         {
-            lines.Add(FormatGuardLine(reply));
+            lines.Add(FormatPartnerLine(reply));
             scrollToBottom = true;
         }
 
@@ -105,23 +115,13 @@ namespace CastleRescue.UI
             scrollToBottom = true;
         }
 
-        private void HandleKeyGiven()
-        {
-            statusLine = $"<color=#7CFC00><b>{guard.GuardName} anahtarı sana uzattı. Kapı açılıyor!</b></color>";
-        }
-
-        private void HandleAttacked()
-        {
-            statusLine = $"<color=#FF4040><b>{guard.GuardName} öfkeyle sana saldırdı!</b></color>";
-        }
-
-        private string FormatGuardLine(string text) => $"<color=#E8C170><b>{guard.GuardName}:</b></color> {text}";
+        private string FormatPartnerLine(string text) => $"<color=#E8C170><b>{partner.DisplayName}:</b></color> {text}";
 
         // ---------- Çizim ----------
 
         private void OnGUI()
         {
-            if (!IsOpen || guard == null) return;
+            if (!IsOpen || partner == null) return;
 
             GUIStyle textStyle = new GUIStyle(GUI.skin.label) { fontSize = fontSize, wordWrap = true, richText = true };
             GUIStyle titleStyle = new GUIStyle(textStyle) { fontSize = fontSize + 4, fontStyle = FontStyle.Bold };
@@ -146,9 +146,12 @@ namespace CastleRescue.UI
             float width = panel.width - 30f;
             float y = panel.y + 10f;
 
-            // Başlık + güven çubuğu
-            GUI.Label(new Rect(x, y, width * 0.5f, 34f), guard.GuardName, titleStyle);
-            DrawTrustBar(new Rect(x + width * 0.55f, y + 8f, width * 0.45f, 20f), guard.Trust);
+            // Başlık + (varsa) güven çubuğu
+            GUI.Label(new Rect(x, y, width * 0.5f, 34f), partner.DisplayName, titleStyle);
+            if (partner.HasTrust)
+            {
+                DrawTrustBar(new Rect(x + width * 0.55f, y + 8f, width * 0.45f, 20f), partner.Trust);
+            }
             y += 40f;
 
             // Konuşma geçmişi
@@ -177,12 +180,12 @@ namespace CastleRescue.UI
             }
             GUI.EndScrollView();
 
-            // Durum satırı: düşünüyor / anahtar verildi / saldırdı
+            // Durum satırı: düşünüyor / özel durum mesajı
             float statusY = panel.yMax - inputAreaHeight + 5f;
-            if (guard.IsThinking)
+            if (partner.IsThinking)
             {
                 int dots = (int)(Time.time * 3f) % 4;
-                GUI.Label(new Rect(x, statusY, width, 30f), $"<i>{guard.GuardName} düşünüyor{new string('.', dots)}</i>", textStyle);
+                GUI.Label(new Rect(x, statusY, width, 30f), $"<i>{partner.DisplayName} düşünüyor{new string('.', dots)}</i>", textStyle);
             }
             else if (!string.IsNullOrEmpty(statusLine))
             {
@@ -191,7 +194,7 @@ namespace CastleRescue.UI
 
             // Yazı kutusu (konuşma bittiyse gösterme)
             float inputY = panel.yMax - 52f;
-            if (!guard.IsConversationOver)
+            if (!partner.IsConversationOver)
             {
                 DrawInputRow(new Rect(x, inputY, width, 40f), fieldStyle, buttonStyle);
             }
@@ -209,11 +212,11 @@ namespace CastleRescue.UI
             playerInput = GUI.TextField(new Rect(area.x, area.y, area.width - buttonWidth - 10f, area.height), playerInput, 300, fieldStyle);
             bool sendClicked = GUI.Button(new Rect(area.xMax - buttonWidth, area.y, buttonWidth, area.height), "Gönder", buttonStyle);
 
-            bool canSend = !guard.IsThinking && !string.IsNullOrWhiteSpace(playerInput);
+            bool canSend = !partner.IsThinking && !string.IsNullOrWhiteSpace(playerInput);
             if ((enterPressed || sendClicked) && canSend)
             {
                 lines.Add($"<color=#9FD3FF><b>Sen:</b></color> {playerInput.Trim()}");
-                guard.SendPlayerMessage(playerInput);
+                partner.SendPlayerMessage(playerInput);
                 playerInput = "";
                 scrollToBottom = true;
                 if (enterPressed) Event.current.Use();

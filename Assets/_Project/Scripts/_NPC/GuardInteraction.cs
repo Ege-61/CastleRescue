@@ -113,6 +113,9 @@ namespace CastleRescue.NPC
 
         private void HandleCloseRequested()
         {
+            // Konuşma ekranını fare de kullanıyor; sadece gardiyanla konuşuluyorsa kapat.
+            if (!isTalking) return;
+
             // Konuşmanın sonu bekleniyorsa (anahtar/saldırı) Esc ile erken kapatmaya izin verme.
             if (isEnding) return;
             StopTalking();
@@ -121,6 +124,7 @@ namespace CastleRescue.NPC
         private void HandleKeyGiven()
         {
             Debug.Log("[GuardInteraction] Anahtar verildi, kapı açılıyor.");
+            dialogueUI.SetStatus($"<color=#7CFC00><b>{guard.GuardName} anahtarı sana uzattı. Kapı açılıyor!</b></color>");
             onKeyGiven?.Invoke();
             StartCoroutine(EndConversationRoutine(false));
         }
@@ -128,6 +132,7 @@ namespace CastleRescue.NPC
         private void HandleAttacked()
         {
             Debug.Log("[GuardInteraction] Gardiyan saldırdı, oyuncu geri atılıyor.");
+            dialogueUI.SetStatus($"<color=#FF4040><b>{guard.GuardName} öfkeyle sana saldırdı!</b></color>");
             onAttacked?.Invoke();
             StartCoroutine(EndConversationRoutine(true));
         }

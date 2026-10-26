@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 8181116867978909046}
   - component: {fileID: 2181424279006846179}
   - component: {fileID: 5692518012374610740}
+  - component: {fileID: 6388582018557983623}
+  - component: {fileID: 5336903919061993919}
+  - component: {fileID: 7275760530362845040}
   m_Layer: 0
   m_Name: OyunSistemi
   m_TagString: Untagged
@@ -61,6 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db012c440bd69b24eb6da0574157c44f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.Core.GameManager
+  deathMessageDuration: 2.5
 --- !u!114 &2181424279006846179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,3 +93,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.UI.EndScreenUI
   title: SON
   subtitle: "Prensesi kurtard\u0131n!"
+--- !u!114 &6388582018557983623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7574258623992725394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9a1efc8028abdb449c81b50fc1cddd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.LLM.OllamaClient
+  serverUrl: http://localhost:11434
+  modelName: llama3.2:3b
+  timeoutSeconds: 30
+  temperature: 0.7
+--- !u!114 &5336903919061993919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7574258623992725394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 609f57a0d12ef3848953c6e7c23297e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.NPC.CompanionChat
+  llmClientComponent: {fileID: 0}
+  companionName: "F\u0131nd\u0131k"
+  persona: "Sen F\u0131nd\u0131k ad\u0131nda k\xFC\xE7\xFCk, cesur ve biraz geveze bir faresin. Oyuncunun en yak\u0131n dostusun ve onunla birlikte Kuzgun Kalesi'ne, hapsedilmi\u015F prensesi kurtarmaya geldin. Kalenin her k\xF6\u015Fesini bilirsin \xE7\xFCnk\xFC y\u0131llard\u0131r duvarlar\u0131n i\xE7indeki deliklerde ya\u015F\u0131yorsun. Konu\u015Furken arada 'Cik!' dersin."
+  openingLine: "Cik! Ne oldu dostum, bir \u015Fey mi soracaks\u0131n?"
+  levelContexts:
+  - sceneName: Level1_Labirent
+    context: "\u015Eu an karanl\u0131k bir labirentteyiz. Labirentte \xFC\xE7 kap\u0131 var. Bat\u0131daki kap\u0131n\u0131n (1) arkas\u0131nda dikenli bir \xE7ukur, do\u011Fudaki kap\u0131n\u0131n (2) arkas\u0131nda tehlikeli bir yarat\u0131k, kuzeydeki kap\u0131n\u0131n (3) arkas\u0131nda \xE7\u0131k\u0131\u015F var. Bunu hemen s\xF6yleme, \xF6nce ipucu ver (\xF6rn. 'kuzeyden temiz hava geliyor'). Oyuncu \u0131srar ederse a\xE7\u0131k\xE7a s\xF6yle. Yarat\u0131ktan Shift ile ko\u015Farak ka\xE7\u0131labilir."
+  - sceneName: Level2_Salon
+    context: "\u015Eu an kalenin y\u0131k\u0131k ziyafet salonunday\u0131z ve sen oyuncunun omzundas\u0131n. Zemin \xE7\xF6km\xFC\u015F, a\u015Fa\u011F\u0131s\u0131 kaz\u0131klarla dolu. Geriye kalan karolardan baz\u0131lar\u0131 \xE7\xFCr\xFCk; \xFCzerine bas\u0131l\u0131nca bir saniye sonra d\xFC\u015F\xFCyor. Oyuncuya durmadan, seri z\u0131plamas\u0131n\u0131 ve kar\u015F\u0131daki balkona gitmesini s\xF6yle."
+  - sceneName: Level3_Avlu
+    context: "\u015Eu an kalenin avlusunday\u0131z. Y\xFCksek bir \xE7\u0131k\u0131nt\u0131n\u0131n \xFCst\xFCnde bir \u015Falter var; oyuncu oraya \xE7\u0131kamaz ama sen t\u0131rmanabilirsin. Oyuncu \u015Faltere bak\u0131p F tu\u015Funa basarsa sen gidip indirirsin, yerden basamaklar y\xFCkselir. Yukar\u0131da Gardiyan Hugo prensesin kap\u0131s\u0131n\u0131 koruyor. Hugo'nun alt\u0131na, \u015Faraba ve emekli olma hayaline zaaf\u0131 var; kaba davran\u0131l\u0131rsa sinirlenir."
+  maxHistoryMessages: 8
+--- !u!114 &7275760530362845040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7574258623992725394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67c6bed3cb7e8d3469c053f7899300f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.NPC.CompanionChatInteraction
+  dialogueUI: {fileID: 0}
