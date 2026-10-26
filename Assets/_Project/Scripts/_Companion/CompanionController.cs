@@ -40,6 +40,13 @@ namespace CastleRescue.Companion
         [Tooltip("Fare bu kadar saniye kıpırdamazsa sıkıştı sayılır.")]
         [SerializeField] private float stuckTimeout = 2f;
 
+        [Header("Omuz Ayarları")]
+        [Tooltip("İşaretliyse fare bölüme oyuncunun omzunda başlar (örn. Level 2'de).")]
+        [SerializeField] private bool startOnShoulder = false;
+
+        [Tooltip("Omuz noktası, oyuncuya göre: sağ, yukarı, ileri.")]
+        [SerializeField] private Vector3 shoulderOffset = new Vector3(0.45f, 0.35f, -0.1f);
+
         // ---- Durumların kullandığı özellikler ----
         public NavMeshAgent Agent { get; private set; }
         public CompanionSensor Sensor { get; private set; }
@@ -50,6 +57,7 @@ namespace CastleRescue.Companion
         public float InteractDuration => interactDuration;
         public float MaxTaskTime => maxTaskTime;
         public float StuckTimeout => stuckTimeout;
+        public Vector3 ShoulderOffset => shoulderOffset;
 
         // ---- Durum makinesi ve durumlar ----
         public StateMachine StateMachine { get; private set; }
@@ -57,6 +65,9 @@ namespace CastleRescue.Companion
         public GoToTargetState GoToTargetState { get; private set; }
         public InteractState InteractState { get; private set; }
         public ReturnState ReturnState { get; private set; }
+        public ShoulderState ShoulderState { get; private set; }
+
+        public bool IsOnShoulder => StateMachine.CurrentState == ShoulderState;
 
         // ---- Görev bilgisi ----
         public IInteractable CurrentTarget { get; private set; }
@@ -95,10 +106,25 @@ namespace CastleRescue.Companion
             GoToTargetState = new GoToTargetState(this);
             InteractState = new InteractState(this);
             ReturnState = new ReturnState(this);
+            ShoulderState = new ShoulderState(this);
         }
 
         private void Start()
         {
+            StateMachine.ChangeState(startOnShoulder ? (IAgentState)ShoulderState : FollowState);
+        }
+
+        /// <summary>Fareyi oyuncunun omzuna çıkarır.</summary>
+        public void ClimbOnShoulder()
+        {
+            if (IsBusy) return;
+            StateMachine.ChangeState(ShoulderState);
+        }
+
+        /// <summary>Fareyi omuzdan indirip takibe geçirir.</summary>
+        public void GetOffShoulder()
+        {
+            if (!IsOnShoulder) return;
             StateMachine.ChangeState(FollowState);
         }
 
@@ -114,7 +140,7 @@ namespace CastleRescue.Companion
         public bool CommandInteract(IInteractable target)
         {
             if (target == null || !target.CanInteract) return false;
-            if (IsBusy) return false;
+            if (IsBusy || IsOnShoulder) return false;
 
             CurrentTarget = target;
             taskStartTime = Time.time;

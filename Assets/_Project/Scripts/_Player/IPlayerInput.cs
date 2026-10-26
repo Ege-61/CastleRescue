@@ -25,6 +25,9 @@ namespace CastleRescue.Player
         /// <summary>F tuşu: fareye emir verme.</summary>
         bool CommandCompanionPressed { get; }
 
+        /// <summary>T tuşu: fareyle sohbet etme.</summary>
+        bool TalkToCompanionPressed { get; }
+
         /// <summary>
         /// Girdiler kapalıysa tüm değerler sıfır/false döner.
         /// Örn. NPC ile yazışırken oyuncu yürümesin diye kapatacağız.

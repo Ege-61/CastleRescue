@@ -41,5 +41,6 @@ namespace CastleRescue.Player
         public bool SprintHeld => Kb != null && Kb.leftShiftKey.isPressed;
         public bool InteractPressed => Kb != null && Kb.eKey.wasPressedThisFrame;
         public bool CommandCompanionPressed => Kb != null && Kb.fKey.wasPressedThisFrame;
+        public bool TalkToCompanionPressed => Kb != null && Kb.tKey.wasPressedThisFrame;
     }
 }

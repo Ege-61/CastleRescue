@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 3429005537988121800}
   - component: {fileID: 1842841475744413890}
   - component: {fileID: 7936244460364261905}
+  - component: {fileID: 8551612353392431686}
+  - component: {fileID: 1231748562034792039}
   m_Layer: 0
   m_Name: Mouse
   m_TagString: Untagged
@@ -157,6 +159,8 @@ MonoBehaviour:
   interactDuration: 1
   maxTaskTime: 30
   stuckTimeout: 2
+  startOnShoulder: 0
+  shoulderOffset: {x: 0.45, y: 0.35, z: -0.1}
 --- !u!114 &1842841475744413890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,3 +199,47 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8551612353392431686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774564896547908906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26a4009ddb2154540badb244e8927a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.Companion.CompanionSpeech
+  companionName: "F\u0131nd\u0131k"
+  minLineDuration: 2
+  secondsPerCharacter: 0.05
+  fontSize: 22
+--- !u!114 &1231748562034792039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5774564896547908906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5967e894321597f4e936408f775c51be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CastleRescue.Companion.CompanionGuardCommentator
+  commentChance: 0.6
+  cooldown: 6
+  trustUpLines:
+  - "(f\u0131s\u0131ldar) Cik! Bence ikna oluyor, devam et!"
+  - "(f\u0131s\u0131ldar) Y\xFCz\xFC yumu\u015Fad\u0131, do\u011Fru yoldas\u0131n!"
+  - "(f\u0131s\u0131ldar) Aferin! Biraz daha \xFCst\xFCne git."
+  trustDownLines:
+  - "(f\u0131s\u0131ldar) Dikkat et, sinirleniyor!"
+  - "(f\u0131s\u0131ldar) Cik cik... Bu hi\xE7 iyi gitmedi."
+  - "(f\u0131s\u0131ldar) Sakin ol, k\u0131zd\u0131r\u0131rsan bizi kovar!"
+  neutralLines:
+  - "(f\u0131s\u0131ldar) Ya\u015Fl\u0131 adam alt\u0131na bay\u0131l\u0131r derler..."
+  - "(f\u0131s\u0131ldar) \u015Earap kokusu al\u0131yorum, belki \u015Faraba zaaf\u0131 vard\u0131r?"
+  - "(f\u0131s\u0131ldar) Prensesin masum oldu\u011Funu s\xF6ylesene!"
+  keyGivenLine: "Cik cik! Ba\u015Fard\u0131k! Hadi prensese!"
+  attackedLine: "Kaaa\xE7! K\u0131zd\u0131rd\u0131n onu!"
