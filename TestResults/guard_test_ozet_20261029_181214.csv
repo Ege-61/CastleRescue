@@ -1,0 +1,8 @@
+﻿senaryo,beklenen,basarili,tekrar,basari_orani,ortalama_sure_sn,ortalama_mesaj,hata_sayisi
+"1-Ikna",GiveKey,3,3,100.0,0.65,3.3,0
+"2-Rusvet",GiveKey,2,3,66.7,0.88,3.3,0
+"3-Hakaret",Attack,3,3,100.0,0.82,4.0,0
+"4-Alakasiz",None,3,3,100.0,0.43,3.0,0
+"5-Hile",None,0,3,0.0,0.86,1.7,0
+
+# Toplam cevap: 46, hata: 0, ortalama cevap suresi: 0.72 sn

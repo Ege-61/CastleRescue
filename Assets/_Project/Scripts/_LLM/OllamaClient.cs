@@ -23,7 +23,52 @@ namespace CastleRescue.LLM
 
         [SerializeField, Range(0f, 1.5f)] private float temperature = 0.7f;
 
+        [Header("Isınma")]
+        [Tooltip("Oyun açılınca modeli ekran kartına önceden yüklesin mi? " +
+                 "Kapalıysa ilk mesajın cevabı 20-30 saniye sürebilir.")]
+        [SerializeField] private bool warmUpOnStart = true;
+
+        [Tooltip("Model son istekten sonra bu kadar süre bellekte tutulur (Ollama'nın keep_alive ayarı).")]
+        [SerializeField] private string keepAlive = "30m";
+
         public bool IsBusy { get; private set; }
+
+        private void Start()
+        {
+            if (warmUpOnStart) StartCoroutine(WarmUpRoutine());
+        }
+
+        /// <summary>
+        /// Ollama'ya mesajsız bir istek gönderir. Ollama bu durumda cevap üretmez, sadece modeli belleğe yükler.
+        /// Böylece oyuncu NPC'ye ulaştığında model hazır olur. Hata olursa sadece uyarı yazar, oyunu etkilemez.
+        /// </summary>
+        private IEnumerator WarmUpRoutine()
+        {
+            string url = serverUrl.TrimEnd('/') + "/api/chat";
+            string body = "{\"model\":\"" + modelName + "\",\"messages\":[],\"keep_alive\":\"" + keepAlive + "\"}";
+            float startTime = Time.realtimeSinceStartup;
+
+            using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+            {
+                request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.timeout = 120;
+
+                yield return request.SendWebRequest();
+
+                float duration = Time.realtimeSinceStartup - startTime;
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log($"[OllamaClient] '{modelName}' modeli {duration:F1} sn'de belleğe yüklendi.");
+                }
+                else
+                {
+                    Debug.LogWarning($"[OllamaClient] Isınma isteği başarısız: {request.error}. " +
+                                     "Oyun yine çalışır, ilk cevap gecikebilir.");
+                }
+            }
+        }
 
         public void SendChat(IReadOnlyList<ChatMessage> messages, string jsonSchema, Action<LLMResult> onComplete)
         {
@@ -82,6 +127,7 @@ namespace CastleRescue.LLM
                 model = modelName,
                 messages = new List<ChatMessage>(messages),
                 stream = false,
+                keep_alive = keepAlive,
                 options = new OllamaOptions { temperature = temperature }
             };
 

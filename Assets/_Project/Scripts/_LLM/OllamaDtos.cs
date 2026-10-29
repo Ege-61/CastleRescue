@@ -14,6 +14,7 @@ namespace CastleRescue.LLM
         public string model;
         public List<ChatMessage> messages;
         public bool stream;          // false: cevabın tamamını tek seferde al
+        public string keep_alive;    // model son istekten sonra ne kadar bellekte kalsın, örn. "30m"
         public OllamaOptions options;
     }
 
