@@ -34,9 +34,23 @@ namespace CastleRescue.World
         public bool CanInteract => !IsPulled;
         public Transform InteractionPoint => interactionPoint != null ? interactionPoint : transform;
 
+        private Quaternion startRotation;
+
         private void Awake()
         {
             if (handle == null) handle = transform;
+            startRotation = handle.localRotation;
+        }
+
+        /// <summary>
+        /// Şalteri tekrar yukarı kaldırır. Otomatik testlerde her denemeden önce çağrılır.
+        /// (Bağlı platformlar zaten yükseldiyse tekrar hareket etmezler.)
+        /// </summary>
+        public void ResetLever()
+        {
+            StopAllCoroutines();
+            handle.localRotation = startRotation;
+            IsPulled = false;
         }
 
         public void Interact(GameObject interactor)
