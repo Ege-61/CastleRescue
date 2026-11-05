@@ -11,6 +11,7 @@ namespace CastleRescue.World
     ///   .  boş zemin
     ///   S  oyuncunun başlangıç noktası (işaret konur)
     ///   1, 2, 3  kapı (oraya açılabilir bir kapı konur)
+    ///   P  çukur (zemini pitDepth kadar aşağıda olan hücre)
     ///
     /// Kullanım: Inspector'da bileşenin ⋮ menüsünden "Labirenti Oluştur" seçilir.
     /// Labirent oyun başlamadan, editörde oluşturulur; böylece NavMesh de bake edilebilir.
@@ -27,9 +28,9 @@ namespace CastleRescue.World
             "##.#.##3###.#.#\n" +
             "#...........#.#\n" +
             "#####.###.###.#\n" +
-            "#...#...#.....#\n" +
-            "#...1.#.#######\n" +
-            "#...#.#...#...#\n" +
+            "#PPP#...#.....#\n" +
+            "#PPP1.#.#######\n" +
+            "#PPP#.#...#...#\n" +
             "#####.###.2...#\n" +
             "#.......#.#...#\n" +
             "#.#####.#.#####\n" +
@@ -39,6 +40,9 @@ namespace CastleRescue.World
         [Header("Boyutlar")]
         [SerializeField] private float cellSize = 3f;
         [SerializeField] private float wallHeight = 3f;
+
+        [Tooltip("Çukur hücrelerinin (P) zemini bu kadar aşağıda olur.")]
+        [SerializeField] private float pitDepth = 2.5f;
 
         [Header("Görünüm (isteğe bağlı)")]
         [SerializeField] private Material wallMaterial;
@@ -66,6 +70,11 @@ namespace CastleRescue.World
 
             Transform walls = CreateGroup("Duvarlar");
             Transform doors = CreateGroup("Kapilar");
+            Transform floors = CreateGroup("Zemin");
+
+            // Duvarlar çukurun dibine kadar uzansın ki çukurun kenarları boş görünmesin.
+            float totalWallHeight = wallHeight + pitDepth;
+            float wallCenterY = wallHeight - totalWallHeight / 2f;
 
             int wallCount = 0;
             for (int r = 0; r < rowCount; r++)
@@ -78,9 +87,21 @@ namespace CastleRescue.World
                     if (cell == '#')
                     {
                         CreateCube($"Duvar_{r}_{c}", walls,
-                            position + Vector3.up * (wallHeight / 2f),
-                            new Vector3(cellSize, wallHeight, cellSize), wallMaterial);
+                            position + Vector3.up * wallCenterY,
+                            new Vector3(cellSize, totalWallHeight, cellSize), wallMaterial);
                         wallCount++;
+                        continue;
+                    }
+
+                    // Duvar olmayan her hücreye kendi zemin parçası. Çukur hücrelerinde zemin aşağıda.
+                    float floorY = cell == 'P' ? -pitDepth : 0f;
+                    CreateCube(cell == 'P' ? $"CukurZemin_{r}_{c}" : $"Zemin_{r}_{c}", floors,
+                        position + Vector3.up * (floorY - 0.25f),
+                        new Vector3(cellSize, 0.5f, cellSize), floorMaterial);
+
+                    if (cell == 'P')
+                    {
+                        continue;
                     }
                     else if (cell == 'S')
                     {
@@ -98,12 +119,11 @@ namespace CastleRescue.World
                 }
             }
 
-            // Zemin ve tavan: tüm labirenti kaplayan iki büyük küp
+            // Tavan: tüm labirenti kaplayan büyük bir küp
             float width = columnCount * cellSize;
             float depth = rowCount * cellSize;
             Vector3 center = new Vector3(width / 2f - cellSize / 2f, 0f, -(depth / 2f - cellSize / 2f));
 
-            CreateCube("Zemin", transform, center + Vector3.down * 0.25f, new Vector3(width, 0.5f, depth), floorMaterial);
             if (buildCeiling)
             {
                 CreateCube("Tavan", transform, center + Vector3.up * (wallHeight + 0.25f), new Vector3(width, 0.5f, depth), wallMaterial);
